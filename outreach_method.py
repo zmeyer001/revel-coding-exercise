@@ -9,12 +9,12 @@ def get_weather_info(data):
     For now, grab the conditions at noon for each day.  The assumption is that communication will occur in the middle of
     the day. Later, can create a more elegant summary for the day.
     Args:
-        data (str): JSON response from the OpenWeatherMap.org API
+        data (dict): JSON response from the OpenWeatherMap.org API
 
     Returns:
-        (dict) todo
+        (dict) Keys: date, Values: (temp, is_sunny, is_rainy)
     """
-    daily_measures = {}     # keys: date, values: (temp, sunny, rainy)
+    daily_measures = {}     # keys: date, values: (temp, is_sunny, is_rainy)
     for measurement in data["list"]:
         # If we've already grabbed info about this date, move on
         date = measurement["dt_txt"].split(" ")[0]
@@ -29,10 +29,10 @@ def get_weather_info(data):
         # Grab the temperature and sunshine/rain conditions
         temp = measurement["main"]["temp"]
         weather = measurement["weather"][0]["main"]
-        sunny = True if weather == "Clear" else False
-        rainy = True if weather == "Rain" else False
+        is_sunny = True if weather == "Clear" else False
+        is_rainy = True if weather == "Rain" else False
         if date not in daily_measures:
-            daily_measures[date] = (temp, sunny, rainy)
+            daily_measures[date] = (temp, is_sunny, is_rainy)
 
     return daily_measures
 
