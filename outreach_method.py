@@ -2,7 +2,15 @@ import json
 import requests
 
 
-def get_weather_info(data):
+def get_weather_info(measurement):
+    temp = measurement["main"]["temp"]
+    weather = measurement["weather"][0]["main"]
+    is_sunny = True if weather == "Clear" else False
+    is_rainy = True if weather == "Rain" else False
+    return temp, is_sunny, is_rainy
+
+
+def get_daily_measurements(data):
     """
     Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
     each day.
@@ -14,6 +22,7 @@ def get_weather_info(data):
     Returns:
         (dict) Keys: date, Values: (temp, is_sunny, is_rainy)
     """
+    # Loop through the data, and grab one set of measurements per day
     daily_measures = {}     # keys: date, values: (temp, is_sunny, is_rainy)
     for measurement in data["list"]:
         # If we've already grabbed info about this date, move on
@@ -27,12 +36,8 @@ def get_weather_info(data):
             continue
 
         # Grab the temperature and sunshine/rain conditions
-        temp = measurement["main"]["temp"]
-        weather = measurement["weather"][0]["main"]
-        is_sunny = True if weather == "Clear" else False
-        is_rainy = True if weather == "Rain" else False
         if date not in daily_measures:
-            daily_measures[date] = (temp, is_sunny, is_rainy)
+            daily_measures[date] = get_weather_info(measurement)
 
     return daily_measures
 
@@ -44,6 +49,6 @@ if __name__ == "__main__":
     data = json.loads(response.text)
 
     # Grab the weather information
-    daily_measures = get_weather_info(data)
+    daily_measures = get_daily_measurements(data)
     for day in daily_measures:
         print(day, daily_measures[day])
