@@ -3,6 +3,14 @@ import requests
 
 
 def get_weather_info(measurement):
+    """
+    Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info.
+    Args:
+        measurement (dict): Section of the JSON response from the OpenWeatherMap.org API
+
+    Returns:
+        (tuple) temp, is_sunny, is_rainy
+    """
     temp = measurement["main"]["temp"]
     weather = measurement["weather"][0]["main"]
     is_sunny = True if weather == "Clear" else False
