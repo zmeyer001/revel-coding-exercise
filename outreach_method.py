@@ -50,13 +50,40 @@ def get_daily_measurements(data):
     return daily_measurements
 
 
+def get_valid_outreach_methods(daily_measurements):
+    """
+    Find valid outreach methods, given the weather measurements.
+    Rules:
+    - Text message: sunny and >75 degrees
+    - Email: between 55 and 75 degrees
+    - Phone call: <55 degrees or raining
+
+    Args:
+        daily_measurements (dict): Keys: date, Values: (temp, is_sunny, is_rainy)
+
+    Returns:
+        (dict) Keys: date, Values: outreach_method
+    """
+    outreach_methods = {}    # Keys: date, Values: tuple of valid outreach method(s)
+    for date in daily_measurements:
+        temp, is_sunny, is_rainy = daily_measurements[date]
+        text = True if temp >= 75 and is_sunny else False
+        email = True if 55 <= temp < 75 else False
+        phone = True if temp < 55 or is_rainy else False
+        outreach_methods[date] = (text, email, phone)
+    return outreach_methods
+
+
 if __name__ == "__main__":
     # Get data from API
     url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
     response = requests.get(url)
     minneapolis_data = json.loads(response.text)
 
-    # Grab the weather information
+    # Grab the weather information for each day
     daily_measures = get_daily_measurements(minneapolis_data)
-    for day in daily_measures:
-        print(day, daily_measures[day])
+
+    # Get valid outreach methods for each day, given the weather
+    daily_valid_methods = get_valid_outreach_methods(daily_measures)
+    for date in daily_valid_methods:
+        print(date, daily_valid_methods[date])
