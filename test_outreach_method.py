@@ -1,4 +1,4 @@
-from outreach_method import get_weather_info, get_daily_measurements
+from outreach_method import get_weather_info, get_daily_measurements, get_valid_outreach_methods
 
 
 def test_get_weather_info_basic():
@@ -1385,7 +1385,19 @@ def test_get_daily_measurements_basic():
     assert get_daily_measurements(data) == {'2020-03-03': (28.49, False, False), '2020-03-04': (24.71, False, False), '2020-03-05': (37.22, False, False), '2020-03-06': (25.79, True, False), '2020-03-07': (34.09, True, False)}
 
 
+def test_get_valid_outreach_methods_basic():
+    measures = {
+        '2020-03-03': (28.49, False, False),
+        '2020-03-04': (24.71, False, False),
+        '2020-03-05': (37.22, False, False),
+        '2020-03-06': (25.79, True, False),
+        '2020-03-07': (34.09, True, False)
+    }
+    assert get_valid_outreach_methods(measures) == {'2020-03-03': (False, False, True), '2020-03-04': (False, False, True), '2020-03-05': (False, False, True), '2020-03-06': (False, False, True), '2020-03-07': (False, False, True)}
+
+
 if __name__ == '__main__':
     test_get_weather_info_basic()
     test_get_daily_measurements_basic()
+    test_get_valid_outreach_methods_basic()
     print("Everything passed")
