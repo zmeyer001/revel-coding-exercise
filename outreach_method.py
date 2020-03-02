@@ -1,12 +1,7 @@
 import json
 import requests
 
-# Get data from API
-url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
-response = requests.get(url)
-data = json.loads(response.text)
 
-# Grab the weather information
 def get_weather_info(data):
     """
     Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
@@ -42,6 +37,13 @@ def get_weather_info(data):
     return daily_measures
 
 
-daily_measures = get_weather_info(data)
-for day in daily_measures:
-    print(day, daily_measures[day])
+if __name__ == "__main__":
+    # Get data from API
+    url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
+    response = requests.get(url)
+    data = json.loads(response.text)
+
+    # Grab the weather information
+    daily_measures = get_weather_info(data)
+    for day in daily_measures:
+        print(day, daily_measures[day])
