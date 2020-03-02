@@ -23,11 +23,11 @@ def get_daily_measurements(data):
         (dict) Keys: date, Values: (temp, is_sunny, is_rainy)
     """
     # Loop through the data, and grab one set of measurements per day
-    daily_measures = {}     # keys: date, values: (temp, is_sunny, is_rainy)
+    daily_measurements = {}     # keys: date, values: (temp, is_sunny, is_rainy)
     for measurement in data["list"]:
         # If we've already grabbed info about this date, move on
         date = measurement["dt_txt"].split(" ")[0]
-        if date in daily_measures:
+        if date in daily_measurements:
             continue
 
         # If the time isn't noon, move on
@@ -36,19 +36,19 @@ def get_daily_measurements(data):
             continue
 
         # Grab the temperature and sunshine/rain conditions
-        if date not in daily_measures:
-            daily_measures[date] = get_weather_info(measurement)
+        if date not in daily_measurements:
+            daily_measurements[date] = get_weather_info(measurement)
 
-    return daily_measures
+    return daily_measurements
 
 
 if __name__ == "__main__":
     # Get data from API
     url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
     response = requests.get(url)
-    data = json.loads(response.text)
+    minneapolis_data = json.loads(response.text)
 
     # Grab the weather information
-    daily_measures = get_daily_measurements(data)
+    daily_measures = get_daily_measurements(minneapolis_data)
     for day in daily_measures:
         print(day, daily_measures[day])
