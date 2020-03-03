@@ -22,14 +22,15 @@ def get_weather_info(measurement):
     return {"temp": temp, "is_sunny": is_sunny, "is_rainy": is_rainy}
 
 
-def get_daily_measurements(data):
+def get_daily_measurements(data, time_of_day):
     """
     Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
     each day.
-    For now, grab the conditions at noon for each day.  The assumption is that communication will occur in the middle of
-    the day. Later, can create a more elegant summary for the day.
+    For now, grabs the conditions at a specific time for each day.  Later, can create a more elegant summary for the day.
     Args:
         data (dict): JSON response from the OpenWeatherMap.org API
+        time_of_day (string): Time of day at which the measurements will be collected, formatted in military time as
+            HH:MM:SS (e.g. "00:00:00" is midnight)
 
     Returns:
         (dict) Keys: date, Values: (temp, is_sunny, is_rainy)
@@ -42,9 +43,9 @@ def get_daily_measurements(data):
         if date in daily_measurements:
             continue
 
-        # If the time isn't noon, move on
+        # If the time isn't the requested time of day, move on
         time = measurement["dt_txt"].split(" ")[1]
-        if time != "12:00:00":
+        if time != time_of_day:
             continue
 
         # Grab the temperature and sunshine/rain conditions
@@ -120,6 +121,11 @@ if __name__ == "__main__":
     parser.add_argument("--state", "-s", help="State abbreviation, if city in US", default="")
     parser.add_argument("--country_code", "-cc", help="Country code (ISO 3166)", default="US")
     parser.add_argument("--units", "-u", help="Unit system for temperature", default="imperial")
+    parser.add_argument("--time_of_day",
+                        "-t",
+                        help="Time of day, in military time.  Options: 00:00:00, 03:00:00, 06:00:00, 09:00:00,"
+                             "12:00:00, 15:00:00, 18:00:00, 21:00:00)",
+                        default="12:00:00")
     args = parser.parse_args()
 
     # Get data from API
@@ -130,8 +136,8 @@ if __name__ == "__main__":
     if data["cod"] == "404":
         raise Exception(f"Problem accessing OpenWeatherMap API: {data['message']}")
 
-    # Grab the weather information for each day
-    daily_measures = get_daily_measurements(data)
+    # Grab the weather information for each day at the given time
+    daily_measures = get_daily_measurements(data, time_of_day=args.time_of_day)
 
     # Get valid outreach methods for each day, given the weather
     daily_valid_methods = get_valid_outreach_methods(daily_measures)

@@ -7,8 +7,8 @@ the next five days.
 
 _Steps_:
 - Using the API for OpenWeatherMap.org, grab the 5-day weather forecast information for the city
-- Condense the information for each day into one data point (in this case, I use the weather information at noon)
-- Based on the weather information for each day, determine the suggested outreach method
+- Condense the information for each day into one data point (user supplies which hour of day to use)
+- Based on the weather information for each day at the given hour, determine the suggested outreach method
 
 ## Software Used
 I used the following software to complete this project:
@@ -47,8 +47,9 @@ pytest
 
 ## Project limitations
 If I were to have more time to work on this project, I would make a variety of tweaks to my code:
-- Summarize daily weather: Instead of using the weather at noon for each day, I would create a more elegant summary.
-For example, I could summarize the day's weather using the average values for the temperatures, sunshine, and rain.
+- Summarize daily weather: Instead of using the weather from the same hour for each day, I would create a more elegant
+summary.  For example, I could summarize the day's weather using the average values for the temperatures, sunshine, and
+rain.
 - Enhance communication method selection: Determine a valid method of communication for cases where the temperature is
 greater than 75 degrees Fahrenheit and it is not sunny.  Currently, the `choose_outreach_method` function returns
 `"none"` in these rare cases.

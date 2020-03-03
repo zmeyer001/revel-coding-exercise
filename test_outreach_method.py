@@ -1382,7 +1382,7 @@ def test_get_daily_measurements_basic():
             "sunset": 1583193726
         }
     }
-    assert get_daily_measurements(data) == {'2020-03-03': {'temp': 28.49, 'is_sunny': False, 'is_rainy': False}, '2020-03-04': {'temp': 24.71, 'is_sunny': False, 'is_rainy': False}, '2020-03-05': {'temp': 37.22, 'is_sunny': False, 'is_rainy': False}, '2020-03-06': {'temp': 25.79, 'is_sunny': True, 'is_rainy': False}, '2020-03-07': {'temp': 34.09, 'is_sunny': True, 'is_rainy': False}}
+    assert get_daily_measurements(data, time_of_day="12:00:00") == {'2020-03-03': {'temp': 28.49, 'is_sunny': False, 'is_rainy': False}, '2020-03-04': {'temp': 24.71, 'is_sunny': False, 'is_rainy': False}, '2020-03-05': {'temp': 37.22, 'is_sunny': False, 'is_rainy': False}, '2020-03-06': {'temp': 25.79, 'is_sunny': True, 'is_rainy': False}, '2020-03-07': {'temp': 34.09, 'is_sunny': True, 'is_rainy': False}}
 
 
 def test_get_valid_outreach_methods_basic():
