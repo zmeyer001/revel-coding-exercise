@@ -30,3 +30,13 @@ To perform the tests, simply run:
 ```commandline
 pytest
 ```
+
+## Software Used
+I used the following software to complete this project:
+- Windows 10
+- Python 3.7
+- pytest 5.3.5
+- PyCharm 2019.2.2
+- GitHub Desktop 2.3.1
+- Git Bash 2.23.0
+- Notepad++ 7.8.4
