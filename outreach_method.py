@@ -119,8 +119,8 @@ if __name__ == "__main__":
     # Get arguments from the command line
     parser = argparse.ArgumentParser()
     parser.add_argument("city", help="City name")
-    parser.add_argument("--state", "-s", help="State name, if city in US", default="")
-    parser.add_argument("--country_code", "-cc", help="Country code", default="us")
+    parser.add_argument("--state", "-s", help="State abbreviation, if city in US", default="")
+    parser.add_argument("--country_code", "-cc", help="Country code (ISO 3166)", default="US")
     parser.add_argument("--units", "-u", help="Unit system for temperature", default="imperial")
     args = parser.parse_args()
 
