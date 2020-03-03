@@ -70,7 +70,7 @@ def get_valid_outreach_methods(daily_measurements):
         is_sunny = daily_measurements[date]["is_sunny"]
         is_rainy = daily_measurements[date]["is_rainy"]
         text = True if temp >= 75 and is_sunny else False
-        email = True if 55 <= temp < 75 else False
+        email = True if 55 <= temp < 75 and not is_rainy else False
         phone = True if temp < 55 or is_rainy else False
         outreach_methods[date] = {"text": text, "email": email, "phone": phone}
     return outreach_methods
