@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     # Decide which outreach method to use for each day
     daily_outreach_methods = choose_outreach_method(daily_valid_methods)
-    city_full_string = f"{args.city.capitalize()}{', ' if args.state else ''}{args.state.upper()}{', ' if args.country_code else ''}{args.country_code.upper()}"
+    city_full_string = f"{args.city}{', ' if args.state else ''}{args.state}{', ' if args.country_code else ''}{args.country_code}"
     print(f"Daily outreach methods for {city_full_string}:")
     for date in daily_outreach_methods:
         print(f"{date}: {daily_outreach_methods[date]}")
