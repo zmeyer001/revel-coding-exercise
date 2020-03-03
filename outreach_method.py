@@ -1,5 +1,9 @@
+import argparse
 import json
 import requests
+
+# API key for OpenWeatherMap.org
+api_key = "09110e603c1d5c272f94f64305c09436"
 
 
 def get_weather_info(measurement):
@@ -112,18 +116,31 @@ def choose_outreach_method(valid_methods):
 
 
 if __name__ == "__main__":
+    # Get arguments from the command line
+    parser = argparse.ArgumentParser()
+    parser.add_argument("city", help="City name")
+    parser.add_argument("--state", "-s", help="State name, if city in US", default="")
+    parser.add_argument("--country_code", "-cc", help="Country code", default="us")
+    parser.add_argument("--units", "-u", help="Unit system for temperature", default="imperial")
+    args = parser.parse_args()
+
     # Get data from API
-    url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
+    query = f"{args.city}{',' if args.state else ''}{args.state}{',' if args.country_code else ''}{args.country_code}"
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={query}&units={args.units}&APPID={api_key}"
     response = requests.get(url)
-    minneapolis_data = json.loads(response.text)
+    data = json.loads(response.text)
+    if data["cod"] == "404":
+        raise Exception(f"Problem accessing OpenWeatherMap API: {data['message']}")
 
     # Grab the weather information for each day
-    daily_measures = get_daily_measurements(minneapolis_data)
+    daily_measures = get_daily_measurements(data)
 
     # Get valid outreach methods for each day, given the weather
     daily_valid_methods = get_valid_outreach_methods(daily_measures)
 
     # Decide which outreach method to use for each day
     daily_outreach_methods = choose_outreach_method(daily_valid_methods)
+    city_full_string = f"{args.city.capitalize()}{', ' if args.state else ''}{args.state.upper()}{', ' if args.country_code else ''}{args.country_code.upper()}"
+    print(f"Daily outreach methods for {city_full_string}:")
     for date in daily_outreach_methods:
-        print(date, daily_outreach_methods[date])
+        print(f"{date}: {daily_outreach_methods[date]}")
