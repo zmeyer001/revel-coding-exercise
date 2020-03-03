@@ -108,8 +108,6 @@ def choose_outreach_method(valid_methods):
         elif phone:
             outreach_method += "phone"
         else:
-            # todo: what do we do if none of the methods are valid? (e.g. >75 and not sunny)
-            # todo: this else also includes the case where more than one is valid
             outreach_method = "none"
         daily_outreach_methods[date] = outreach_method
     return daily_outreach_methods
