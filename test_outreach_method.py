@@ -1,4 +1,4 @@
-from outreach_method import get_weather_info, get_daily_measurements, get_valid_outreach_methods
+from outreach_method import get_weather_info, get_daily_measurements, get_valid_outreach_methods, choose_outreach_method
 
 
 def test_get_weather_info_basic():
@@ -1394,3 +1394,34 @@ def test_get_valid_outreach_methods_basic():
         '2020-03-07': {"temp": 34.09, "is_sunny": True, "is_rainy": False}
     }
     assert get_valid_outreach_methods(measures) == {'2020-03-03': {'text': False, 'email': False, 'phone': True}, '2020-03-04': {'text': False, 'email': False, 'phone': True}, '2020-03-05': {'text': False, 'email': False, 'phone': True}, '2020-03-06': {'text': False, 'email': False, 'phone': True}, '2020-03-07': {'text': False, 'email': False, 'phone': True}}
+
+
+def test_choose_outreach_method_basic():
+    methods = {
+        '2020-03-04': {
+            'text': False,
+            'email': False,
+            'phone': True
+        },
+        '2020-03-05': {
+            'text': False,
+            'email': False,
+            'phone': True
+        },
+        '2020-03-06': {
+            'text': False,
+            'email': False,
+            'phone': True
+        },
+        '2020-03-07': {
+            'text': False,
+            'email': False,
+            'phone': True
+        },
+        '2020-03-08': {
+            'text': False,
+            'email': False,
+            'phone': True
+        }
+    }
+    assert choose_outreach_method(methods) == {'2020-03-04': 'phone', '2020-03-05': 'phone', '2020-03-06': 'phone', '2020-03-07': 'phone', '2020-03-08': 'phone'}

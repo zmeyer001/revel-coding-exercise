@@ -76,6 +76,41 @@ def get_valid_outreach_methods(daily_measurements):
     return outreach_methods
 
 
+def choose_outreach_method(valid_methods):
+    """
+    Figure out the correct outreach method.
+    If there is one valid outreach method, returns that name in a string (e.g. "text")
+    If there is no valid outreach method, returns the string "none".
+    If there is more than one valid outreach method, throws an exception.
+    Args:
+        valid_methods (dict): Keys: date, Values: tuple of valid outreach method(s)
+
+    Returns:
+        (str) Best outreach method (options: "text", "email", "phone", "none")
+    """
+    daily_outreach_methods = {}
+    for date in valid_methods:
+        # If there's more than one valid method, throw up your hands
+        if sum(valid_methods[date].values()) > 1:
+            raise ValueError(f"Found more than one valid method for {date}: {valid_methods[date]}")
+        outreach_method = ""
+        text = valid_methods[date]["text"]
+        email = valid_methods[date]["email"]
+        phone = valid_methods[date]["phone"]
+        if text and not (email or phone):
+            outreach_method += "text"
+        elif email and not phone:
+            outreach_method += "email"
+        elif phone:
+            outreach_method += "phone"
+        else:
+            # todo: what do we do if none of the methods are valid? (e.g. >75 and not sunny)
+            # todo: this else also includes the case where more than one is valid
+            outreach_method = "none"
+        daily_outreach_methods[date] = outreach_method
+    return daily_outreach_methods
+
+
 if __name__ == "__main__":
     # Get data from API
     url = "http://api.openweathermap.org/data/2.5/forecast?q=minneapolis,us&units=imperial&APPID=09110e603c1d5c272f94f64305c09436"
@@ -87,5 +122,8 @@ if __name__ == "__main__":
 
     # Get valid outreach methods for each day, given the weather
     daily_valid_methods = get_valid_outreach_methods(daily_measures)
-    for date in daily_valid_methods:
-        print(date, daily_valid_methods[date])
+
+    # Decide which outreach method to use for each day
+    daily_outreach_methods = choose_outreach_method(daily_valid_methods)
+    for date in daily_outreach_methods:
+        print(date, daily_outreach_methods[date])
