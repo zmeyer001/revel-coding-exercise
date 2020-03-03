@@ -44,3 +44,17 @@ To perform the tests, simply run:
 ```commandline
 pytest
 ```
+
+## Project limitations
+If I were to have more time to work on this project, I would make a variety of tweaks to my code:
+- Summarize daily weather: Instead of using the weather at noon for each day, I would create a more elegant summary.
+For example, I could summarize the day's weather using the average values for the temperatures, sunshine, and rain.
+- Enhance communication method selection: Determine a valid method of communication for cases where the temperature is
+greater than 75 degrees Fahrenheit and it is not sunny.  Currently, the `choose_outreach_method` function returns
+`"none"` in these rare cases.
+- Use other technologies: Most of my coding experience thus far has been in Python, so it would be fun to learn how to
+create this application using other technologies like Java and JavaScript.  Also, I have a little bit of experience
+creating Flask services, so it would have been fun to work with those again.
+- Add more tests: I added a basic unit test for each function, but in my normal practice I create more tests.
+- Increase performance: In my normal practice, after creating a minimum viable product, I go back and increase the
+efficiency of my code.
