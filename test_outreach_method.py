@@ -38,7 +38,7 @@ def test_get_weather_info_basic():
             },
         'dt_txt': '2020-03-03 12:00:00'
     }
-    assert get_weather_info(measurement) == (28.49, False, False)
+    assert get_weather_info(measurement) == {'temp': 28.49, 'is_sunny': False, 'is_rainy': False}
 
 
 def test_get_daily_measurements_basic():
@@ -1382,15 +1382,15 @@ def test_get_daily_measurements_basic():
             "sunset": 1583193726
         }
     }
-    assert get_daily_measurements(data) == {'2020-03-03': (28.49, False, False), '2020-03-04': (24.71, False, False), '2020-03-05': (37.22, False, False), '2020-03-06': (25.79, True, False), '2020-03-07': (34.09, True, False)}
+    assert get_daily_measurements(data) == {'2020-03-03': {'temp': 28.49, 'is_sunny': False, 'is_rainy': False}, '2020-03-04': {'temp': 24.71, 'is_sunny': False, 'is_rainy': False}, '2020-03-05': {'temp': 37.22, 'is_sunny': False, 'is_rainy': False}, '2020-03-06': {'temp': 25.79, 'is_sunny': True, 'is_rainy': False}, '2020-03-07': {'temp': 34.09, 'is_sunny': True, 'is_rainy': False}}
 
 
 def test_get_valid_outreach_methods_basic():
     measures = {
-        '2020-03-03': (28.49, False, False),
-        '2020-03-04': (24.71, False, False),
-        '2020-03-05': (37.22, False, False),
-        '2020-03-06': (25.79, True, False),
-        '2020-03-07': (34.09, True, False)
+        '2020-03-03': {"temp": 28.49, "is_sunny": False, "is_rainy": False},
+        '2020-03-04': {"temp": 24.71, "is_sunny": False, "is_rainy": False},
+        '2020-03-05': {"temp": 37.22, "is_sunny": False, "is_rainy": False},
+        '2020-03-06': {"temp": 25.79, "is_sunny": True, "is_rainy": False},
+        '2020-03-07': {"temp": 34.09, "is_sunny": True, "is_rainy": False}
     }
-    assert get_valid_outreach_methods(measures) == {'2020-03-03': (False, False, True), '2020-03-04': (False, False, True), '2020-03-05': (False, False, True), '2020-03-06': (False, False, True), '2020-03-07': (False, False, True)}
+    assert get_valid_outreach_methods(measures) == {'2020-03-03': {'text': False, 'email': False, 'phone': True}, '2020-03-04': {'text': False, 'email': False, 'phone': True}, '2020-03-05': {'text': False, 'email': False, 'phone': True}, '2020-03-06': {'text': False, 'email': False, 'phone': True}, '2020-03-07': {'text': False, 'email': False, 'phone': True}}

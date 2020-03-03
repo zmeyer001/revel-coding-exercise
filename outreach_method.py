@@ -15,7 +15,7 @@ def get_weather_info(measurement):
     weather = measurement["weather"][0]["main"]
     is_sunny = True if weather == "Clear" else False
     is_rainy = True if weather == "Rain" else False
-    return temp, is_sunny, is_rainy
+    return {"temp": temp, "is_sunny": is_sunny, "is_rainy": is_rainy}
 
 
 def get_daily_measurements(data):
@@ -66,11 +66,13 @@ def get_valid_outreach_methods(daily_measurements):
     """
     outreach_methods = {}    # Keys: date, Values: tuple of valid outreach method(s)
     for date in daily_measurements:
-        temp, is_sunny, is_rainy = daily_measurements[date]
+        temp = daily_measurements[date]["temp"]
+        is_sunny = daily_measurements[date]["is_sunny"]
+        is_rainy = daily_measurements[date]["is_rainy"]
         text = True if temp >= 75 and is_sunny else False
         email = True if 55 <= temp < 75 else False
         phone = True if temp < 55 or is_rainy else False
-        outreach_methods[date] = (text, email, phone)
+        outreach_methods[date] = {"text": text, "email": email, "phone": phone}
     return outreach_methods
 
 
