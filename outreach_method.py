@@ -14,10 +14,16 @@ class CityForecast:
         self.country_code = country_code
         self.units = units
         self.time_of_day = time_of_day
-        self.query = None
-        self.url = None
-        self.code = None
+        # Build the URL using the parameters
+        self.query = f"{self.city}{',' if self.state else ''}{self.state}{',' if self.country_code else ''}{self.country_code}"
+        self.url = f"http://api.openweathermap.org/data/2.5/forecast?q={self.query}&units={self.units}&APPID={api_key}"
         self.data = None
+        self.outreach_methods = {}    # Keys: date, Values: outreach method
+
+        # Get data from the API
+        self.get_data()
+        # Determine the best outreach methods for each day
+        self.get_outreach_methods()
 
     def get_data(self):
         """
@@ -27,127 +33,91 @@ class CityForecast:
             state (str): State abbreviation, if city in US (optional even if in US and city name is unique)
             country_code (str): Country code, as per ISO 3166 (optional if city name is unique)
             units (str): Unit system for temperature
-
-        Returns:
-            (json) Text of the API response
         """
-        # Build the URL using the parameters
-        query = f"{self.city}{',' if self.state else ''}{self.state}{',' if self.country_code else ''}{self.country_code}"
-        url = f"http://api.openweathermap.org/data/2.5/forecast?q={query}&units={self.units}&APPID={api_key}"
-
-        # Get the data
-        response = requests.get(url)
+        response = requests.get(self.url)
         self.data = json.loads(response.text)
         if self.data["cod"] == "404":
             raise Exception(f"Problem accessing OpenWeatherMap API: {self.data['message']}")
 
+    def get_outreach_methods(self):
+        """
+        Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
+        each day.
+        For now, grabs the conditions at a specific time for each day.  Later, can create a more elegant summary for the day.
+        Args:
+            data (dict): JSON response from the OpenWeatherMap.org API
+            time_of_day (string): Time of day at which the measurements will be collected, formatted in military time as
+                HH:MM:SS (e.g. "00:00:00" is midnight)
+        """
+        # Loop through the data, and grab one set of measurements per day
+        for measurement in self.data["list"]:
+            # If we've already grabbed info about this date, move on
+            date = measurement["dt_txt"].split(" ")[0]
+            if date in self.outreach_methods:
+                continue
 
-def get_weather_info(measurement):
-    """
-    Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info.
-    Args:
-        measurement (dict): Section of the JSON response from the OpenWeatherMap.org API
+            # If the time isn't the requested time of day, move on
+            time = measurement["dt_txt"].split(" ")[1]
+            if time != self.time_of_day:
+                continue
 
-    Returns:
-        (tuple) temp, is_sunny, is_rainy
-    """
-    temp = measurement["main"]["temp"]
-    weather = measurement["weather"][0]["main"]
-    is_sunny = True if weather == "Clear" else False
-    is_rainy = True if weather == "Rain" else False
-    return {"temp": temp, "is_sunny": is_sunny, "is_rainy": is_rainy}
-
-
-def get_daily_measurements(data, time_of_day):
-    """
-    Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
-    each day.
-    For now, grabs the conditions at a specific time for each day.  Later, can create a more elegant summary for the day.
-    Args:
-        data (dict): JSON response from the OpenWeatherMap.org API
-        time_of_day (string): Time of day at which the measurements will be collected, formatted in military time as
-            HH:MM:SS (e.g. "00:00:00" is midnight)
-
-    Returns:
-        (dict) Keys: date, Values: (temp, is_sunny, is_rainy)
-    """
-    # Loop through the data, and grab one set of measurements per day
-    daily_measurements = {}     # keys: date, values: (temp, is_sunny, is_rainy)
-    for measurement in data["list"]:
-        # If we've already grabbed info about this date, move on
-        date = measurement["dt_txt"].split(" ")[0]
-        if date in daily_measurements:
-            continue
-
-        # If the time isn't the requested time of day, move on
-        time = measurement["dt_txt"].split(" ")[1]
-        if time != time_of_day:
-            continue
-
-        # Grab the temperature and sunshine/rain conditions
-        if date not in daily_measurements:
-            daily_measurements[date] = get_weather_info(measurement)
-
-    return daily_measurements
+            # Grab the outreach method
+            self.outreach_methods[date] = DailyMeasurement(measurement).best_method
 
 
-def get_valid_outreach_methods(daily_measurements):
-    """
-    Find valid outreach methods, given the weather measurements.
-    Rules:
-    - Text message: sunny and >75 degrees
-    - Email: between 55 and 75 degrees
-    - Phone call: <55 degrees or raining
+class DailyMeasurement:
 
-    Args:
-        daily_measurements (dict): Keys: date, Values: (temp, is_sunny, is_rainy)
+    def __init__(self, data):
+        self.data = data
+        self.temp = None
+        self.is_sunny = None
+        self.is_rainy = None
+        self.text = None
+        self.email = None
+        self.phone = None
+        self.best_method = None
 
-    Returns:
-        (dict) Keys: date, Values: outreach_method
-    """
-    outreach_methods = {}    # Keys: date, Values: tuple of valid outreach method(s)
-    for date in daily_measurements:
-        temp = daily_measurements[date]["temp"]
-        is_sunny = daily_measurements[date]["is_sunny"]
-        is_rainy = daily_measurements[date]["is_rainy"]
-        text = True if temp >= 75 and is_sunny else False
-        email = True if 55 <= temp < 75 and not is_rainy else False
-        phone = True if temp < 55 or is_rainy else False
-        outreach_methods[date] = {"text": text, "email": email, "phone": phone}
-    return outreach_methods
+        # Grab the weather information
+        self.get_weather_info()
+        # Determine valid outreach methods, given the weather
+        self.get_valid_outreach_methods()
+        self.choose_outreach_method()
 
+    def get_weather_info(self):
+        """
+        Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info.
+        """
+        self.temp = self.data["main"]["temp"]
+        weather = self.data["weather"][0]["main"]
+        self.is_sunny = True if weather == "Clear" else False
+        self.is_rainy = True if weather == "Rain" else False
 
-def choose_outreach_method(valid_methods):
-    """
-    Figure out the correct outreach method.
-    If there is one valid outreach method, returns that name in a string (e.g. "text")
-    If there is no valid outreach method, returns the string "none".
-    If there is more than one valid outreach method, throws an exception.
-    Args:
-        valid_methods (dict): Keys: date, Values: tuple of valid outreach method(s)
+    def get_valid_outreach_methods(self):
+        """
+        Find valid outreach methods, given the weather measurements.
+        Rules:
+        - Text message: sunny and >75 degrees
+        - Email: between 55 and 75 degrees
+        - Phone call: <55 degrees or raining
+        """
+        self.text = True if self.temp >= 75 and self.is_sunny else False
+        self.email = True if 55 <= self.temp < 75 and not self.is_rainy else False
+        self.phone = True if self.temp < 55 or self.is_rainy else False
 
-    Returns:
-        (str) Best outreach method (options: "text", "email", "phone", "none")
-    """
-    daily_outreach_methods = {}
-    for date in valid_methods:
-        # If there's more than one valid method, throw up your hands
-        if sum(valid_methods[date].values()) > 1:
-            raise ValueError(f"Found more than one valid method for {date}: {valid_methods[date]}")
-        outreach_method = ""
-        text = valid_methods[date]["text"]
-        email = valid_methods[date]["email"]
-        phone = valid_methods[date]["phone"]
-        if text and not (email or phone):
-            outreach_method += "text"
-        elif email and not phone:
-            outreach_method += "email"
-        elif phone:
-            outreach_method += "phone"
+    def choose_outreach_method(self):
+        """
+        Figure out the correct outreach method.
+        If there is one valid outreach method, returns that name in a string (e.g. "text")
+        Otherwise, returns the string "none".
+        """
+        if self.text and not (self.email or self.phone):
+            self.best_method = "text"
+        elif self.email and not self.phone:
+            self.best_method = "email"
+        elif self.phone:
+            self.best_method = "phone"
         else:
-            outreach_method = "none"
-        daily_outreach_methods[date] = outreach_method
-    return daily_outreach_methods
+            self.best_method = "none"
 
 
 if __name__ == "__main__":
@@ -164,22 +134,12 @@ if __name__ == "__main__":
                         default="12:00:00")
     args = parser.parse_args()
 
-    # Instantiate the CityForecast class
+    # Determine the best outreach method for each day
     forecast = CityForecast(city=args.city, state=args.state, country_code=args.country_code, units=args.units,
                             time_of_day=args.time_of_day)
 
-    # Get data from API
-    data = forecast.get_data()
-
-    # Grab the weather information for each day at the given time
-    daily_measures = get_daily_measurements(data, time_of_day=args.time_of_day)
-
-    # Get valid outreach methods for each day, given the weather
-    daily_valid_methods = get_valid_outreach_methods(daily_measures)
-
-    # Decide which outreach method to use for each day
-    daily_outreach_methods = choose_outreach_method(daily_valid_methods)
+    # Print out the results
     city_full_string = f"{args.city}{', ' if args.state else ''}{args.state}{', ' if args.country_code else ''}{args.country_code}"
     print(f"Daily outreach methods for {city_full_string}:")
-    for date in daily_outreach_methods:
-        print(f"{date}: {daily_outreach_methods[date]}")
+    for date in forecast.outreach_methods:
+        print(f"{date}: {forecast.outreach_methods[date]}")
