@@ -8,11 +8,12 @@ api_key = "09110e603c1d5c272f94f64305c09436"
 
 class CityForecast:
 
-    def __init__(self, city, state, country_code, units):
+    def __init__(self, city, state, country_code, units, time_of_day):
         self.city = city
         self.state = state
         self.country_code = country_code
         self.units = units
+        self.time_of_day = time_of_day
         self.query = None
         self.url = None
         self.code = None
@@ -164,7 +165,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Instantiate the CityForecast class
-    forecast = CityForecast(city=args.city, state=args.state, country_code=args.country_code, units=args.units)
+    forecast = CityForecast(city=args.city, state=args.state, country_code=args.country_code, units=args.units,
+                            time_of_day=args.time_of_day)
 
     # Get data from API
     data = forecast.get_data()
