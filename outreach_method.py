@@ -6,6 +6,31 @@ import requests
 api_key = "09110e603c1d5c272f94f64305c09436"
 
 
+def get_data(city, state="", country_code="", units=""):
+    """
+    Get the 5-day/3-hour forecast from the API for OpenWeatherMap.org.
+    Args:
+        city (str): City name
+        state (str): State abbreviation, if city in US (optional even if in US and city name is unique)
+        country_code (str): Country code, as per ISO 3166 (optional if city name is unique)
+        units (str): Unit system for temperature
+
+    Returns:
+        (json) Text of the API response
+    """
+    # Build the URL using the parameters
+    query = f"{city}{',' if state != '' else ''}{state}{',' if country_code != '' else ''}{country_code}"
+    url = f"http://api.openweathermap.org/data/2.5/forecast?q={query}&units={units}&APPID={api_key}"
+
+    # Get the data
+    response = requests.get(url)
+    data = json.loads(response.text)
+    if data["cod"] == "404":
+        raise Exception(f"Problem accessing OpenWeatherMap API: {data['message']}")
+
+    return data
+
+
 def get_weather_info(measurement):
     """
     Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info.
@@ -129,12 +154,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Get data from API
-    query = f"{args.city}{',' if args.state else ''}{args.state}{',' if args.country_code else ''}{args.country_code}"
-    url = f"http://api.openweathermap.org/data/2.5/forecast?q={query}&units={args.units}&APPID={api_key}"
-    response = requests.get(url)
-    data = json.loads(response.text)
-    if data["cod"] == "404":
-        raise Exception(f"Problem accessing OpenWeatherMap API: {data['message']}")
+    data = get_data(args.city, args.state, args.country_code, args.units)
 
     # Grab the weather information for each day at the given time
     daily_measures = get_daily_measurements(data, time_of_day=args.time_of_day)
