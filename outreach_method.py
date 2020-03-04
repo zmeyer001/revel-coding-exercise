@@ -3,7 +3,7 @@ import json
 import requests
 
 # API key for OpenWeatherMap.org
-api_key = "09110e603c1d5c272f94f64305c09436"
+API_KEY = "09110e603c1d5c272f94f64305c09436"
 
 
 class CityForecast:
@@ -16,7 +16,7 @@ class CityForecast:
         self.time_of_day = time_of_day
         # Build the URL using the parameters
         self.query = f"{self.city}{',' if self.state else ''}{self.state}{',' if self.country_code else ''}{self.country_code}"
-        self.url = f"http://api.openweathermap.org/data/2.5/forecast?q={self.query}&units={self.units}&APPID={api_key}"
+        self.url = f"http://api.openweathermap.org/data/2.5/forecast?q={self.query}&units={self.units}&APPID={API_KEY}"
         self.data = None
         self.outreach_methods = {}    # Keys: date, Values: outreach method
 
