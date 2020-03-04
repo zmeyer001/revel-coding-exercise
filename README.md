@@ -51,11 +51,13 @@ If I were to have more time to work on this project, I would make a variety of t
 summary.  For example, I could summarize the day's weather using the average values for the temperatures, sunshine, and
 rain.
 - Enhance communication method selection: Determine a valid method of communication for cases where the temperature is
-greater than 75 degrees Fahrenheit and it is not sunny.  Currently, the `choose_outreach_method` function returns
-`"none"` in these rare cases.
+greater than 75 degrees Fahrenheit and it is not sunny.  Currently, I return `"none"` in these rare cases.  Also, if
+there were two valid methods of communication for the same day, I'd currently return `"none"`.
 - Use other technologies: Most of my coding experience thus far has been in Python, so it would be fun to learn how to
 create this application using other technologies like Java and JavaScript.  Also, I have a little bit of experience
 creating Flask services, so it would have been fun to work with those again.
-- Add more tests: I added a basic unit test for each function, but in my normal practice I create more tests.
+- Add tests: When I first started the project, I was doing some procedural programming, and had written a basic unit
+test for each function that I created.  Then I pivoted to using object-oriented programming, and the refactor broke my
+tests.  With more time, I would have mocked the API call and fixed the tests.
 - Increase performance: In my normal practice, after creating a minimum viable product, I go back and increase the
 efficiency of my code.
