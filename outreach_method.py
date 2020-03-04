@@ -78,7 +78,7 @@ class DailyMeasurement:
 
     def get_weather_info(self):
         """
-        Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info
+        Given a measurement (i.e. one of the 8 3-hour periods throughout the day), grab the relevant info
         """
         self.temp = self.data["main"]["temp"]
         weather = self.data["weather"][0]["main"]
@@ -95,8 +95,8 @@ class DailyMeasurement:
 
     def choose_outreach_method(self):
         """
-        Figure out the correct outreach method.  If there is one valid outreach method, returns that name in a string
-        (e.g. "text").  Otherwise, returns the string "none".
+        Figure out the correct outreach method.  If there is one valid outreach method, use that (e.g. "text").
+        Otherwise, use "none".
         """
         if self.text and not (self.email or self.phone):
             self.best_method = "text"
