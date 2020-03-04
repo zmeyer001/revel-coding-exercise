@@ -27,12 +27,7 @@ class CityForecast:
 
     def get_data(self):
         """
-        Get the 5-day/3-hour forecast from the API for OpenWeatherMap.org.
-        Args:
-            city (str): City name
-            state (str): State abbreviation, if city in US (optional even if in US and city name is unique)
-            country_code (str): Country code, as per ISO 3166 (optional if city name is unique)
-            units (str): Unit system for temperature
+        Get the 5-day/3-hour forecast from the API for OpenWeatherMap.org
         """
         response = requests.get(self.url)
         self.text = json.loads(response.text)
@@ -45,10 +40,6 @@ class CityForecast:
         Given a response from the OpenWeatherMap.org 5-day/3-hour API, grab a summary of temperature, sunshine, and rain for
         each day.
         For now, grabs the conditions at a specific time for each day.  Later, can create a more elegant summary for the day.
-        Args:
-            data (dict): JSON response from the OpenWeatherMap.org API
-            time_of_day (string): Time of day at which the measurements will be collected, formatted in military time as
-                HH:MM:SS (e.g. "00:00:00" is midnight)
         """
         # Loop through the data, and grab one set of measurements per day
         for measurement in self.data:
@@ -87,7 +78,7 @@ class DailyMeasurement:
 
     def get_weather_info(self):
         """
-        Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info.
+        Given a measurement (i.e. one of the 8 3-hour periods throughout the day), return relevant info
         """
         self.temp = self.data["main"]["temp"]
         weather = self.data["weather"][0]["main"]
@@ -96,11 +87,7 @@ class DailyMeasurement:
 
     def get_valid_outreach_methods(self):
         """
-        Find valid outreach methods, given the weather measurements.
-        Rules:
-        - Text message: sunny and >75 degrees
-        - Email: between 55 and 75 degrees
-        - Phone call: <55 degrees or raining
+        Find valid outreach methods, given the weather measurements
         """
         self.text = True if self.temp >= 75 and self.is_sunny else False
         self.email = True if 55 <= self.temp < 75 and not self.is_rainy else False
@@ -108,9 +95,8 @@ class DailyMeasurement:
 
     def choose_outreach_method(self):
         """
-        Figure out the correct outreach method.
-        If there is one valid outreach method, returns that name in a string (e.g. "text")
-        Otherwise, returns the string "none".
+        Figure out the correct outreach method.  If there is one valid outreach method, returns that name in a string
+        (e.g. "text").  Otherwise, returns the string "none".
         """
         if self.text and not (self.email or self.phone):
             self.best_method = "text"
