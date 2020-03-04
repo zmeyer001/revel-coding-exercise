@@ -39,11 +39,12 @@ python outreach_method.py "London" --country_code "UK"
 ```
 
 ## Testing
-Unit tests are written using [`pytest`](https://docs.pytest.org/en/latest/).
+Unit tests were written using [`pytest`](https://docs.pytest.org/en/latest/).
 To perform the tests, simply run:
 ```commandline
 pytest
 ```
+_Note:_ Tests are not currently working
 
 ## Project limitations
 If I were to have more time to work on this project, I would make a variety of tweaks to my code:
