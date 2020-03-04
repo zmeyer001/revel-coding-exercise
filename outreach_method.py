@@ -35,9 +35,10 @@ class CityForecast:
             units (str): Unit system for temperature
         """
         response = requests.get(self.url)
-        self.data = json.loads(response.text)
-        if self.data["cod"] == "404":
-            raise Exception(f"Problem accessing OpenWeatherMap API: {self.data['message']}")
+        self.text = json.loads(response.text)
+        self.data = self.text["list"]
+        if self.text["cod"] == "404":
+            raise Exception(f"Problem accessing OpenWeatherMap API: {self.text['message']}")
 
     def get_outreach_methods(self):
         """
@@ -50,7 +51,7 @@ class CityForecast:
                 HH:MM:SS (e.g. "00:00:00" is midnight)
         """
         # Loop through the data, and grab one set of measurements per day
-        for measurement in self.data["list"]:
+        for measurement in self.data:
             # If we've already grabbed info about this date, move on
             date = measurement["dt_txt"].split(" ")[0]
             if date in self.outreach_methods:
