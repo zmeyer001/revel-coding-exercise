@@ -61,7 +61,7 @@ class CityForecast:
             if time != self.time_of_day:
                 continue
 
-            # Grab the outreach method
+            # Determine the best outreach method for each day
             self.outreach_methods[date] = DailyMeasurement(measurement).best_method
 
 
@@ -81,6 +81,7 @@ class DailyMeasurement:
         self.get_weather_info()
         # Determine valid outreach methods, given the weather
         self.get_valid_outreach_methods()
+        # Determine the best outreach method
         self.choose_outreach_method()
 
     def get_weather_info(self):
