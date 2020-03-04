@@ -43,13 +43,13 @@ class CityForecast:
         """
         # Loop through the data, and grab one set of measurements per day
         for measurement in self.data:
+            date, time = measurement["dt_txt"].split(" ")
+
             # If we've already grabbed info about this date, move on
-            date = measurement["dt_txt"].split(" ")[0]
             if date in self.outreach_methods:
                 continue
 
             # If the time isn't the requested time of day, move on
-            time = measurement["dt_txt"].split(" ")[1]
             if time != self.time_of_day:
                 continue
 
