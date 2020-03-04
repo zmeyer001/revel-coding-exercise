@@ -44,7 +44,7 @@ To perform the tests, simply run:
 ```commandline
 pytest
 ```
-_Note:_ Tests are not currently working
+_Note: Tests are not currently working._
 
 ## Project limitations
 If I were to have more time to work on this project, I would make a variety of tweaks to my code:
